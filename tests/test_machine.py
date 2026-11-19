@@ -66,6 +66,25 @@ class MachineTests(unittest.TestCase):
 
         self.assertEqual(machine.data_memory[300], 9)
 
+    def test_stage5_vectors_write_new_result_vectors(self):
+        cases = (
+            ("examples/sqrt_vector_1.asm", 200, range(1, 8)),
+            ("examples/sqrt_vector_2.asm", 400, range(2, 9)),
+            ("examples/sqrt_vector_3.asm", 600, range(9, 16)),
+        )
+
+        for filename, result_start, expected in cases:
+            with self.subTest(filename=filename):
+                source = Path(filename).read_text(encoding="utf-8")
+                program = encode_program(parse_source(source))
+                machine = Machine()
+                machine.execute(program)
+                actual = [
+                    machine.data_memory[result_start + offset]
+                    for offset in range(7)
+                ]
+                self.assertEqual(actual, list(expected))
+
 
 if __name__ == "__main__":
     unittest.main()

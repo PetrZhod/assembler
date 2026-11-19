@@ -4,12 +4,13 @@
 Выполняется вариант 10: разработка ассемблера и интерпретатора учебной
 виртуальной машины.
 
-В репозитории реализованы этапы 1–4:
+В репозитории реализованы все пять этапов:
 
 - алгебраический язык ассемблера и промежуточное представление;
 - трансляция команд в машинный код;
 - интерпретатор, раздельная память и XML-дамп;
-- вычисление квадратного корня в аккумуляторе.
+- вычисление квадратного корня в аккумуляторе;
+- поэлементное вычисление квадратного корня над векторами длины 7.
 
 ## Синтаксис ассемблера
 
@@ -113,6 +114,48 @@ Get-Content build/sqrt.xml
 
 В XML ожидается значение `9` по адресу `300`.
 
+## Этап 5. Обработка вектора
+
+Тестовая задача выполняет `sqrt()` над каждым элементом вектора длины 7
+и записывает результат в новый вектор. Подготовлены три программы:
+
+| Файл | Исходный диапазон | Диапазон результата |
+|---|---:|---:|
+| `sqrt_vector_1.asm` | `100..106` | `200..206` |
+| `sqrt_vector_2.asm` | `300..306` | `400..406` |
+| `sqrt_vector_3.asm` | `500..506` | `600..606` |
+
+Пример проверки первой программы в PowerShell:
+
+```powershell
+python src/main.py examples/sqrt_vector_1.asm build/vector1.bin
+python src/interpreter.py build/vector1.bin build/vector1.xml 200 206
+Get-Content build/vector1.xml
+```
+
+В результате должны получиться значения `1, 2, 3, 4, 5, 6, 7`.
+Для двух остальных программ используются аналогичные команды:
+
+```powershell
+python src/main.py examples/sqrt_vector_2.asm build/vector2.bin
+python src/interpreter.py build/vector2.bin build/vector2.xml 400 406
+
+python src/main.py examples/sqrt_vector_3.asm build/vector3.bin
+python src/interpreter.py build/vector3.bin build/vector3.xml 600 606
+```
+
+## Ветки этапов
+
+Каждый этап опубликован в отдельной ветке:
+
+- `stage-1` — промежуточное представление;
+- `stage-2` — машинный код;
+- `stage-3` — интерпретатор и память;
+- `stage-4` — операция `sqrt`;
+- `stage-5` — тестовая задача с векторами.
+
+Ветка `main` содержит итоговую версию и эту общую документацию.
+
 ## Структура репозитория
 
 ```text
@@ -128,13 +171,15 @@ src/
     machine.py
     machine_code.py
     main.py
-    interpreter.py
 tests/
     test_assembler.py
     test_machine.py
 examples/
     copy_array.asm
     sqrt.asm
+    sqrt_vector_1.asm
+    sqrt_vector_2.asm
+    sqrt_vector_3.asm
     variant10.asm
 ```
 
