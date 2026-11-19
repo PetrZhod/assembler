@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+import math
 
 from assembler import ADDRESS_MIN, LOAD, READ, SQRT, WRITE
 from machine_code import DecodedInstruction, decode_instruction
@@ -51,9 +52,8 @@ class Machine:
             self._write_data(instruction.field("B"), self.accumulator)
             return
         if instruction.name == SQRT:
-            raise ExecutionError(
-                "команда sqrt доступна на этапе 4"
-            )
+            self.accumulator = math.isqrt(self.accumulator)
+            return
         raise ExecutionError(
             f"неизвестная команда: {instruction.name}"
         )

@@ -54,6 +54,18 @@ class MachineTests(unittest.TestCase):
         self.assertNotEqual(machine.instruction_memory, b"")
         self.assertEqual(machine.executed_commands, 10)
 
+    def test_sqrt_saves_integer_result_in_memory(self):
+        source = (
+            "accumulator = 81\n"
+            "accumulator = sqrt(accumulator)\n"
+            "memory[300] = accumulator\n"
+        )
+
+        machine = Machine()
+        machine.execute(encode_program(parse_source(source)))
+
+        self.assertEqual(machine.data_memory[300], 9)
+
 
 if __name__ == "__main__":
     unittest.main()
