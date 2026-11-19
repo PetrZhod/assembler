@@ -7,6 +7,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
 
 from assembler import AssemblyError, format_program, parse_source  # noqa: E402
+from machine_code import encode_program, format_bytes  # noqa: E402
 
 
 class AssemblerTests(unittest.TestCase):
@@ -82,4 +83,17 @@ class AssemblerTests(unittest.TestCase):
             ],
         )
 
+    def test_specification_bytes_are_exact(self):
+        source = (
+            "accumulator = 850\n"
+            "accumulator = memory[accumulator]\n"
+            "memory[392] = accumulator\n"
+            "accumulator = sqrt(accumulator)\n"
+        )
 
+        binary = encode_program(parse_source(source))
+
+        self.assertEqual(
+            format_bytes(binary),
+            "0x90, 0x1A, 0x07, 0x41, 0x0C, 0x00, 0x00, 0x05",
+        )
